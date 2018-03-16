@@ -12,7 +12,12 @@ import com.spotify.sdk.android.player.Error;
 import com.spotify.sdk.android.player.PlayerEvent;
 import com.spotify.sdk.android.player.Spotify;
 import com.spotify.sdk.android.player.SpotifyPlayer;
-import com.wrapper.spotify.SpotifyApi;
+//import com.wrapper.spotify.SpotifyApi;
+
+import kaaes.spotify.webapi.android.SpotifyApi;
+import kaaes.spotify.webapi.android.SpotifyService;
+import retrofit.RequestInterceptor;
+import retrofit.RestAdapter;
 
 /**
  * Created by White on 3/7/2018.
@@ -22,7 +27,8 @@ public class MoodifySuggest extends Application implements
         SpotifyPlayer.NotificationCallback, ConnectionStateCallback {
    SpotifyPlayer player;
    SpotifyApi api;
-   private AuthenticationResponse responseFromCreator;
+   SpotifyService spotify;
+   public AuthenticationResponse responseFromCreator;
    
    public MoodifySuggest() {
    
@@ -30,12 +36,13 @@ public class MoodifySuggest extends Application implements
    
    public void setResponse(AuthenticationResponse response) {
       responseFromCreator = response;
+      //Log.d("reeeeeeeeeeeeeeeeeeeeee", "response set");
    }
    public void setPlayer(SpotifyPlayer spotifyPlayer) {
       player = spotifyPlayer;
    }
    public void setApi(SpotifyApi spotifyApi) {
-      api = spotifyApi;
+      //api = spotifyApi;
    }
    
    public void create() {
@@ -55,6 +62,25 @@ public class MoodifySuggest extends Application implements
                Log.e("MainActivity","Could not initialize player: " + throwable.getMessage());
             }
          });
+
+         api = new SpotifyApi();
+         api.setAccessToken(responseFromCreator.getAccessToken());
+         Log.d("MoodifySuggest","Access token set to " + responseFromCreator.getAccessToken());
+
+         RestAdapter restAdapter = new RestAdapter.Builder()
+                 .setEndpoint(SpotifyApi.SPOTIFY_WEB_API_ENDPOINT)
+                 .setRequestInterceptor(new RequestInterceptor() {
+                    @Override
+                    public void intercept(RequestFacade request) {
+                       request.addHeader("Authorization", "Bearer " + responseFromCreator.getAccessToken());
+                    }
+                 })
+                 .build();
+
+         spotify = restAdapter.create(SpotifyService.class);
+         //spotify = api.getService();
+
+         Log.d("MoodifySuggest", "API Built");
       }
    }
    

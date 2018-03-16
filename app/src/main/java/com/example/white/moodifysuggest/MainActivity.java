@@ -23,6 +23,7 @@ import com.spotify.sdk.android.player.Player;
 import com.spotify.sdk.android.player.PlayerEvent;
 import com.spotify.sdk.android.player.Spotify;
 import com.spotify.sdk.android.player.SpotifyPlayer;
+import com.wrapper.spotify.SpotifyApi;
 
 import org.apache.http.auth.AUTH;
 
@@ -34,6 +35,7 @@ public class MainActivity extends Activity {
    private static final int REQUEST_CODE = 1337;
    
    public MoodifySuggest application;
+   public SpotifyApi data;
    
    @Override
    protected void onCreate(Bundle savedInstanceState) {
